@@ -1,0 +1,448 @@
+1. Admin things.
+2. Compiling C.
+3. R Cookbook ch5 continued.
+4. R Cookbook ch6.
+5. R Cookbook ch7.
+6. A brief look at regression in R.
+7. Kernel density estimation.
+
+1. Admin things.
+
+Save as page source, for instance getting lecture3b.txt from CCLE.
+
+For HW3 and 4 you will need a C compiler. Get started on this part
+early so you don't have to wait until the very last minute and have a 
+problem getting started on HW3.
+
+2. Compiling C.
+
+XCode, for Mac OSX, includes a C and C++ compiler, among other tools.
+You can get XCode from
+http://wildfire.stat.ucla.edu/rick/xcode .
+Click on the one choice, xcode_3.2.6_and_ios, to get it. 
+I will only leave it up there for a couple weeks. 
+It takes a couple hours to download.
+If you have a PC, you will need a compiler. There are many free ones.
+See for instance http://www.compilers.net/dir/free/compilers/ccpp.htm .
+
+3. Compiling and calling C from R.
+
+The first step to writing C code is opening a text editor.
+Write your C code, call it something.c, then compile it, to create an
+object file called something.so. Then you can load that into R.
+
+Hello world.
+Create a C function to print "Hello world!" and call this function n
+times in R.
+
+In a text editor, create a C file.  Say it's called hello.c
+The file looks like:
+
+	#include <R.h>
+	#include <Rmath.h>
+
+	/* Start a comment.
+	   Continue your comment.
+         */
+
+        void hello (int *n)
+           {
+	  int i,j;
+	  double a2;
+	  a2 = 4.5;
+	  j = 3;
+	  for(i = 0; i < *n; i++)
+	     Rprintf("The %d rd integral is %f .\n", j, a2);
+	  }
+
+
+In UNIX, in same directory where hello.c is, type
+
+	R CMD SHLIB hello.c
+
+or, in R, do system("R CMD SHLIB hello.c")
+
+In R, in the same directory, do
+
+	dyn.load("hello.so")
+
+	hello2 = function(n){
+		.C("hello",as.integer(n))
+	}
+
+	y = hello2(10)
+
+3. Ch5 continued.
+
+##### SUBSETTING DATAFRAMES.
+
+p127 describes getting a subset of a dataframe. 
+It's similar to lists.
+   x[[n]] gets the nth column, and x[n] returns a dataframe
+consisting of the nth column. pp128-129 give a nice example.
+
+   names = c("abigail", "barbara", "carl", "david")
+   location = c("westwood", "santa monica", "venice", "palms")
+   status = c("undergrad", "phd", "masters", "undergrad")
+   grade = c(1,2,3,4)
+   x = data.frame(names, location, status, grade)
+   x
+
+   x$grade ## the 4th column, as a vector
+   x[[4]] ## the same thing
+   x[4] ## a dataframe consisting only of the 4th vector
+   x[c(1,2,4)] ## the same as x without the 3rd column.
+   x[[c(1,2,4)]] ## error
+
+##### FUNCTIONS ON MATRICES AND DATAFRAMES
+
+mean(x) for instance computes the overall mean 
+of all entries for a matrix,
+but computes the column means for a data frame.
+
+   x = matrix(1:10,ncol=2)
+   mean(x)
+   y = as.data.frame(x)
+   mean(y)
+
+To compute row means or column means of a matrix, 
+you can use colMeans() or apply().
+
+   colMeans(x)
+   apply(x,2,mean)
+
+The "2" means you're going column by column. See p151.
+For row means you would do
+
+   apply(x,1,mean)
+
+apply() works on data frames the same way.
+
+   apply(y,1,mean)
+   apply(y,2,mean)
+
+There is also rowMeans(x).
+
+na.omit() is useful to remove the ROWS with NAs. 
+It is described on Teetor p136.
+Any row with any NA in any entry gets removed.
+
+   x = data.frame(height=c(61,67,72,70), shoes = c(3,2,1,3))
+   x
+   mean(x)
+   x[3,2] = NA
+   x
+   mean(x) ## returns NA for shoes.
+   y = na.omit(x)
+
+rbind() and cbind() are extremely useful for combining rows
+or columns, see Teetor pp138-139.
+
+   z = cbind(names,x,status,grade)
+   z1 = c("ed",71,3,"undergrad","A")
+   z1 = rbind(z,z1) ## doesn't work
+   z2 = data.frame(names="ed",height=71,
+     shoes=3,status="undergrad",grade="A")
+   newz = rbind(z,z2) ## If the names don't match, it won't work.
+   colnames(z2)[3] = "shoes"
+   newz = rbind(z,z2)
+
+##### MORE ABOUT SUBSETTING DATAFRAMES.
+
+merge() combines two dataframes with the same entries 
+in one column. See Teetor p140.
+Note that the the rows (like "Larry" in the example on p140) in one
+dataframe but not the other get removed by default.
+with() on p141 is kind of silly. 
+You might as well use attach(), p142, to
+compute something on a subset of a dataframe. 
+But watch out when changing an element of a dataframe 
+after detaching it! See pp 142-143.
+
+   z2 = data.frame(names="ed",height=71,shoos=3,
+           status="undergrad",grade="A")
+   attach(z2)
+   shoos
+   detach(z2)
+   shoos ## now shoos is gone
+   attach(z2)
+   shoos = 0
+   shoos
+   z2$shoos ## hasn't changed.
+   z2
+
+pp144-145 show how to change modes. Kind of useful.
+
+4. R Cookbook ch. 6.
+
+##### FACTORS.
+
+Teetor p147 describes factors. A factor is a group of elements
+taking values in different levels.
+split, p148, divides the elements into groups, in a list.
+
+   x = c(1,4,1,8,9,4,1)
+   fa = factor(c("b","a","b","a","c","b","c"))
+   y = split(x,fa)
+
+or
+
+   y = unstack(data.frame(x,fa))
+
+if the resulting vectors have the same length,
+unstack() makes the result
+a data frame, rather than a list.
+
+   x = c(1:10)
+   fa = factor(c("a","b","c","d","e","a","b","c","d","e"))
+   y = unstack(data.frame(x,fa))
+
+##### DIFFERENT TYPES OF APPLY().
+
+p149, lapply and sapply useful for applying a function
+to every element of a list.
+sapply returns a vector or matrix if possible,
+whereas lapply always returns a list.
+
+   x = list(a=1:4, b=c(2,2,3,5), c=4:9)
+   y = apply(x, mean) ## error, because x is a list rather 
+                      ## than a matrix.
+   y = lapply(x, mean)
+   z = sapply(x, mean)
+   z = sapply(x, t.test) ## returns a list, 
+                         ## because t.test returns a list.
+   z2 = lapply(x, t.test)
+
+Teetor on the bottom of p150 says you NEED to use lapply() here, 
+because t.test() returns a list. However, sapply() works, 
+though it coerces everything into a list of individual elements, 
+whereas lapply makes it a list of 3 short lists.
+
+   z[1]
+   z2[1]
+
+So the book's example is
+
+   tc2 = function(a){
+      b = t.test(a)
+      b$conf.int
+      }
+   z3 = sapply(x, tc2)
+
+or, as in the book's example on p151,
+
+   z3 = sapply(z2, function(t) t$conf.int)
+
+   foo = function(t){ ## t is a list
+     t$conf.int
+   }
+
+   ## or equivalently
+
+   foo = function(t) t$conf.int
+
+   z3 = sapply(z2, foo)
+
+For a dataframe, lapply() and sapply() work on columns by default.
+lapply() returns a list, and sapply() a vector. See Teetor p152.
+
+   z3 = data.frame(z3)
+   z4 = lapply(z3, mean)
+   z5 = sapply(z3,mean)
+
+Teetor on p153 gives a nice example of the real use of sapply in
+cors = sapply(pred, cor, y=resp).
+It goes column by column in the dataframe pred
+of predictors, calculating the correlation of
+each predictor with the response.
+y=resp is passed as an argument to cor().
+
+##### PASSING ARGUMENTS WITHIN SAPPLY().
+
+Here's an example of how you can pass arguments within sapply.
+Suppose you want to take each element, raise it to the u power,
+and sum up the elements.
+
+   x = data.frame(matrix(1:6,ncol=3))
+   f2 = function(t, u = 3){
+   sum(t^u)
+   }
+   y = sapply(x, f2)
+   y2 = sapply(x, f2, u=2)
+
+You can also do
+
+   y3 = sapply(x, f2, 2)
+
+Use tapply() to apply a function to each subgroup of your data.
+See pp154-155. The functions used in apply(), sapply(), and lapply() 
+must operate on vectors. If instead you want to apply a 
+function that operates on dataframes, such as print(), 
+then use by() instead. See pp 156-157.
+
+If a function only works on scalars, not vectors, such as the
+greatest common denominator function gcd() on p158, 
+then use mapply().
+
+   gcd = function(a,b){
+      if(b==0) return(a)
+      else return(gcd(b, a %% b))
+   }
+   ## a %% b = a mod b
+   gcd(40,16)
+   x = c(1,2,3)
+   y = c(9,6,3)
+   gcd(x,y)
+   mapply(gcd,x,y)
+
+returns [1] 1 2 3
+because 1 is the gcd of (1,9), 2 is the gcd of (2,6), and 3=gcd(3,3).
+For a different example,
+
+   f2 = function(a,b){
+       if(a>b) return("1st is bigger")
+       if(a==b) return("Equal")
+       else return("2nd is bigger")
+   }
+   f2(7,8)
+   f2(8,7)
+   f2(c(1,4,2),c(3,2,2))
+   x = c(1,4,2.5)
+   y = c(3,2,2.5)
+   mapply(f2,x,y)
+
+## Done with ch6.
+
+5. R Cookbook ch. 7.
+
+##### MANIPULATING CHARACTER STRINGS.
+
+p162, nchar() gives the length of a character string.
+
+   nchar("time for class") ## note that spaces count
+   length("time for class")
+
+p165 has a nice example of substr().
+
+   cities = c("New York, NY", "Los Angeles, CA", "Peoria, IL")
+   substr(cities, nchar(cities)-1, nchar(cities))
+   nchar(cities)-1
+   nchar(cities)
+
+strsplit() is useful to split a character string. See p165.
+
+   x = "I#like#to#play#baseball"
+   y = strsplit(x,"#")
+
+The result is an awkward list. You can make it a character vector.
+
+   z = unlist(y)
+
+Now suppose you want to put the string together again
+
+   z2 = paste(z,collapse=" ")
+
+Or if you want to do it manually
+
+   z1 = ""
+   for(i in 1:length(z)) z1 = paste(z1,z[i])
+   z2 = substr(z1,2,nchar(z1))
+
+gsub() can be used to change every instance of a 
+character string to another. See p167. 
+Use sub() for just the first instance.
+
+   x = Sys.Date() ## the current date.
+   y = Sys.time() ## the current time.
+
+##### MANIPULATING TIMES AND DATES.
+
+For manipulating dates, see pp 170-176.
+
+   julian(x)
+   as.numeric(julian(x)) ## days since Jan 1, 1970.
+   x+1
+   y = "2012-02-04"
+   y-x
+   as.Date(y) - x
+
+Now suppose you want the time difference squared.
+
+   (as.Date(y) - x)^2
+   (as.numeric(as.Date(y) - x))^2
+
+## Done with ch 7.
+
+6. A brief glance at regression in R.
+
+Adding a regression line, p232.
+
+   x = runif(100)
+   y = -1.5*x + rnorm(100)
+   z = lm(y ~ x)
+   plot(x,y)
+   abline(z, lty=2, col="blue")
+   z$coef
+
+lm() can also be used for multivariate regression.
+See p269-271, lm(y ~ x1 + x2 + x3).
+
+   x1 = runif(100)
+   x2 = rnorm(100)
+   x3 = rexp(100)
+   y = 17.0 + x1 + 1.5*x2 - 5.0*x3 + rnorm(100)
+   z = lm(y ~ x1 + x2 + x3)
+   z$coef
+   z$coef[1] ## the estimated intercept
+   z$coef[3] ## the estimated slope corresponding to x2
+   attributes(z)
+   summary(z)
+
+In ch. 11, p297, there are functions to calculate the "influence" of
+each point in regression. Do not use these for hw2. You should
+write your own loop to do this.
+
+7. Kernel density estimation.
+
+   x = rnorm(1000)
+   hist(x,nclass=40,prob=T,main="simulated N(0,1) random variables")
+   lines(density(x),lty=2,col="red")
+
+density(), described on p250, is useful for kernel density estimation.
+Suppose your univariate data are x1, x2, ..., xn.
+For any number x0, and any h,
+f^(x0) = 1/(hn) … k((x0-x_i / h), where the sum is from 1 to n,
+and where k() is some density, usually centered at 0,
+and usually with a peak at 0.
+By f^, I mean fhat, our estimate of the true density, f.
+Here f is normal.
+h is called the bandwidth. If h is small, then each point
+gives a lot of density nearby,
+whereas if h is large, then each point gets smoothed out heavily.
+People have shown that the kernel, k, doesn't matter nearly as much
+as the choice of bandwidth.
+See help(density).
+
+By default, kernel = "gaussian".
+By default, bw="nrd0", which is Silverman(1986)'s rule of thumb,
+0.9 s n^(-.2) .
+Here, s is an estimate of sd, given by min{sample sd, IQR/1.34}.
+This is often too small, so Scott(1992) recommended 1.06 s n^(-.2) .
+bw.nrd0() yields Silverman's rule, and bw.nrd() yield's Scott's.
+
+   bw.nrd0(x)
+   0.9 * min(sd(x),IQR(x)/1.34) * 1000^(-.2)
+   bw.nrd(x)
+   1.06 * min(sd(x),IQR(x)/1.34) * 1000^(-.2)
+
+##### PLOTTING A DENSITY ESTIMATE WITH A LEGEND
+
+   hist(x,nclass=40,prob=T,main="simulated N(0,1) random variables")
+   b2 = bw.nrd(x)
+   lines(density(x,bw=b2),col="red")
+   lines(density(x,bw=10*b2),col="blue")
+   lines(density(x,bw=.1*b2),col="brown")
+   lines(sort(x),dnorm(sort(x)),col="green")
+   legend("topright",c("Scott's bw", "huge bw", "tiny bw", "truth"),
+      lty=1,col=c("red","blue","brown","green"),cex=0.8)
+
