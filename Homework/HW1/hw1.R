@@ -1,4 +1,4 @@
-setwd("~/Dropbox/UCLA_Classes/2014_Fall/STATS 202A - Statistical Programming/Homework/HW1")
+setwd("~/Desktop/gitRepos/stats202a-fall2014-ucla/Homework/HW1")
 
 ## Question 1.a
 func90 = function (v) {
@@ -28,6 +28,11 @@ v_91 = func91(ud_100)
 v_mean_90_91 = funcMeanOf90_91(ud_100)
 quantile_90 = quantile(ud_100, 0.9)
 
+cat("90th percentile using func90 =", v_90)
+cat("91st percentile using func91 =", v_91)
+cat("Mean of 90th and 91st percentile using funcMeanOf90_91 =", v_mean_90_91)
+cat("90th percentile using quantile function =", quantile_90)
+
 ## Question 1.d (ii)
 l_90 = c()
 l_91 = c()
@@ -47,16 +52,16 @@ mean_l_91 = cumsum(l_91) / 1:100000
 mean_l_mean_90_91 = cumsum(l_mean_90_91) / 1:100000
 mean_l_quantile_90 = cumsum(l_quantile_90) / 1:100000
 
-plot(c(0,100000), c(min(mean_l_90),max(mean_l_90)),type="n", xlab="x co-ordinates", ylab="y co-ordinates")
+plot(c(0,100000), c(min(mean_l_90),max(mean_l_90)),type="n", xlab="x co-ordinates", ylab="Cumulative Mean", main="Plot of sample mean of the first m of the estimates using func90")
 points(mean_l_90,pch=".", col="red")
 
-plot(c(0,100000), c(min(mean_l_91),max(mean_l_91)),type="n", xlab="x co-ordinates", ylab="y co-ordinates")
+plot(c(0,100000), c(min(mean_l_91),max(mean_l_91)),type="n", xlab="x co-ordinates", ylab="Cumulative Mean", main="Plot of sample mean of the first m of the estimates using func91")
 points(mean_l_91,pch=".", col="blue")
 
-plot(c(0,100000), c(min(mean_l_mean_90_91),max(mean_l_mean_90_91)),type="n", xlab="x co-ordinates", ylab="y co-ordinates")
+plot(c(0,100000), c(min(mean_l_mean_90_91),max(mean_l_mean_90_91)),type="n", xlab="x co-ordinates", ylab="Cumulative Mean", main="Plot of sample mean of the first m of the estimates using funcMeanOf90_91")
 points(mean_l_mean_90_91,pch=".", col="cyan")
 
-plot(c(0,100000), c(min(mean_l_quantile_90),max(mean_l_quantile_90)),type="n", xlab="x co-ordinates", ylab="y co-ordinates")
+plot(c(0,100000), c(min(mean_l_quantile_90),max(mean_l_quantile_90)),type="n", xlab="x co-ordinates", ylab="Cumulative Mean", main="Plot of sample mean of the first m of the estimates using quantile function")
 points(mean_l_quantile_90,pch=".", col="purple")
 
 ## Question 1.e
@@ -67,11 +72,12 @@ mean_l_quantile_90[100000]
 y_min = min(c(min(mean_l_90), min(mean_l_91), min(mean_l_mean_90_91), min(mean_l_quantile_90)))
 y_max = max(c(min(mean_l_90), max(mean_l_91), max(mean_l_mean_90_91), max(mean_l_quantile_90)))
 
-plot(c(0,100000), c(y_min,y_max),type="n", xlab="x co-ordinates", ylab="y co-ordinates")
+plot(c(0,100000), c(y_min,y_max),type="n", xlab="x co-ordinates", ylab="Cumulative Mean", main="Plot of sample mean of the first m of the estimates")
 points(mean_l_90,pch=".", col="red")
 points(mean_l_91,pch=".", col="blue")
 points(mean_l_mean_90_91,pch=".", col="cyan")
 points(mean_l_quantile_90,pch=".", col="purple")
+legend("topright", c("func90","func91", "funcMeanOf90_91", "quantile"), pch = '-', title = "Legend", col=c("red", "blue", "cyan", "purple"))
 
 
 ## Question 2.a
@@ -123,4 +129,3 @@ res_6[[1]]
 plot(c(-1,1),c(-1,1),type="n",xlab="x-coordinates",ylab="y-coordinates");
 points(res_6[[2]],res_6[[3]],pch='.',col="green") ;
 points(res_6[[4]],res_6[[5]],pch='.',col="blue");
-
