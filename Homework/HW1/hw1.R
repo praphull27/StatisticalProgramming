@@ -65,10 +65,10 @@ plot(c(0,100000), c(min(mean_l_quantile_90),max(mean_l_quantile_90)),type="n", x
 points(mean_l_quantile_90,pch=".", col="purple")
 
 ## Question 1.e
-mean_l_90[100000]
-mean_l_91[100000]
-mean_l_mean_90_91[100000]
-mean_l_quantile_90[100000]
+cat("Mean of 100000 estimates using func90 =", mean_l_90[100000])
+cat("Mean of 100000 estimates using func91 =", mean_l_91[100000])
+cat("Mean of 100000 estimates using funcMeanOf90_91 =", mean_l_mean_90_91[100000])
+cat("Mean of 100000 estimates using quantile =", mean_l_quantile_90[100000])
 y_min = min(c(min(mean_l_90), min(mean_l_91), min(mean_l_mean_90_91), min(mean_l_quantile_90)))
 y_max = max(c(min(mean_l_90), max(mean_l_91), max(mean_l_mean_90_91), max(mean_l_quantile_90)))
 
@@ -85,13 +85,13 @@ pi2 = function(n) {
   return(sqrt(6*sum(1/(c(1:n)^2))))
 }
 
-pi2(10^0)
-pi2(10^1)
-pi2(10^2)
-pi2(10^3)
-pi2(10^4)
-pi2(10^5)
-pi2(10^6)
+cat ("Value of pi2(10^0) =", pi2(10^0))
+cat ("Value of pi2(10^1) =", pi2(10^1))
+cat ("Value of pi2(10^2) =", pi2(10^2))
+cat ("Value of pi2(10^3) =", pi2(10^3))
+cat ("Value of pi2(10^4) =", pi2(10^4))
+cat ("Value of pi2(10^5) =", pi2(10^5))
+cat ("Value of pi2(10^6) =", pi2(10^6))
 
 ## Question 2.b
 pi3 = function(n) {
