@@ -1,5 +1,3 @@
-setwd("~/Desktop/gitRepos/stats202a-fall2014-ucla/Homework/HW1")
-
 ## Question 1.a
 func90 = function (v) {
   v_sorted = sort(v)
@@ -97,35 +95,23 @@ cat ("Value of pi2(10^6) =", pi2(10^6))
 pi3 = function(n) {
   x = runif(n, -1, 1)
   y = runif(n, -1, 1)
-  xin = c()
-  xout = c()
-  yin = c()
-  yout = c()
-  pin = 0
-  for(i in 1:n) {
-    d = (x[i])^2 + (y[i])^2
-    if (d <= 1) {
-      pin = pin + 1
-      xin = c(xin, x[i])
-      yin = c(yin, y[i])
-    } else {
-      xout = c(xout, x[i])
-      yout = c(yout, y[i])
-    }
-  }
-  ret = list(pin*4/n, xin, yin, xout, yout)
+  d = (x)^2 + (y)^2
+  pin = which(d <= 1)
+  pout = which(d > 1)
+  pi3_v = length(pin) * 4 / n
+  ret = list(pi3_v, x, y, pin, pout)
   return(ret)
 }
 
-(pi3(10^0))[[1]]
-(pi3(10^1))[[1]]
-(pi3(10^2))[[1]]
-(pi3(10^3))[[1]]
-(pi3(10^4))[[1]]
-(pi3(10^5))[[1]]
+cat("Value of pi3(10^0) =", (pi3(10^0))[[1]])
+cat("Value of pi3(10^1) =", (pi3(10^1))[[1]])
+cat("Value of pi3(10^2) =", (pi3(10^2))[[1]])
+cat("Value of pi3(10^3) =", (pi3(10^3))[[1]])
+cat("Value of pi3(10^4) =", (pi3(10^4))[[1]])
+cat("Value of pi3(10^5) =", (pi3(10^5))[[1]])
 res_6 = pi3(10^6)
-res_6[[1]]
+cat("Value of pi3(10^6) =", res_6[[1]])
 
-plot(c(-1,1),c(-1,1),type="n",xlab="x-coordinates",ylab="y-coordinates");
-points(res_6[[2]],res_6[[3]],pch='.',col="green") ;
-points(res_6[[4]],res_6[[5]],pch='.',col="blue");
+plot(c(-1,1),c(-1,1),type="n",xlab="x-coordinates",ylab="y-coordinates", main="Plot of 10^6 random points in a square. Green are inside unit circle and Blue are outside");
+points((res_6[[2]])[(res_6[[4]])],(res_6[[3]])[(res_6[[4]])],pch='.',col="green") ;
+points((res_6[[2]])[(res_6[[5]])],(res_6[[3]])[(res_6[[5]])],pch='.',col="blue");
