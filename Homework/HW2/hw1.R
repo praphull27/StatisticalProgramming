@@ -1,1 +1,0 @@
-setwd("~/Desktop/gitRepos/StatisticalProgramming/Homework/HW2")
